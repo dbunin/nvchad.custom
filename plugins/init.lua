@@ -119,6 +119,7 @@ return {
     end,
   },
   ["simrat39/rust-tools.nvim"] = {
+    requires = { "lukas-reineke/lsp-format.nvim" },
     after = "nvim-lspconfig",
     config = function()
       require("rust-tools").setup({
