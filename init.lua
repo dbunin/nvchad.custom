@@ -4,6 +4,7 @@ local g = vim.g
 g.maplocalleader = ","
 g.ranger_command_override = "ranger --cmd \"set show_hidden=true\""
 vim.wo.wrap = false
+vim.wo.relativenumber = true
 
 -- folding settings
 -- vim.o.foldcolumn = "0" -- '0' is not bad
