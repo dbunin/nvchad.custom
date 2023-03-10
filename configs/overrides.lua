@@ -1,5 +1,17 @@
 local M = {}
 
+M.telescope = {
+  extensions_list = { "themes", "terms", "repo" },
+  defaults = {
+    mappings = {
+      i = {
+            ["<C-j>"] = require("telescope.actions").move_selection_next,
+            ["<C-k>"] = require("telescope.actions").move_selection_previous,
+      },
+    },
+  },
+}
+
 M.treesitter = {
   ensure_installed = {
     "vim",
@@ -34,7 +46,6 @@ M.nvimtree = {
   git = {
     enable = true,
   },
-
   renderer = {
     highlight_git = true,
     icons = {

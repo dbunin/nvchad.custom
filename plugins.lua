@@ -2,13 +2,38 @@ local overrides = require "custom.configs.overrides"
 
 ---@type NvPluginSpec[]
 local plugins = {
-  "rcarriga/nvim-notify",
   -- Override plugin definition options
   { "lukas-reineke/indent-blankline.nvim", enabled = true },
   { "folke/which-key.nvim",                enabled = true },
   {
     "neovim/nvim-lspconfig",
-    dependencies = { "lukas-reineke/lsp-format.nvim" },
+    dependencies = {
+      "lukas-reineke/lsp-format.nvim",
+      "rcarriga/nvim-notify",
+      {
+        "RRethy/vim-illuminate",
+        config = function()
+          require("illuminate").configure {
+            providers = { "lsp" },
+          }
+          vim.api.nvim_set_hl(0, "IlluminatedWordText", { link = "Visual" })
+          vim.api.nvim_set_hl(0, "IlluminatedWordRead", { link = "Visual" })
+          vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { link = "Visual" })
+        end,
+      },
+
+      {
+        "simrat39/rust-tools.nvim",
+        config = function()
+          require("rust-tools").setup({
+            server = {
+              on_attach = function(client)
+                require("lsp-format").on_attach(client)
+              end,
+            },
+          })
+        end,
+      } },
     config = function()
       require "custom.configs.lspconfig"
     end,
@@ -16,20 +41,14 @@ local plugins = {
   -- overrde plugin configs
   {
     "nvim-telescope/telescope.nvim",
-    ops = function()
-      return {
-        extensions_list = { "themes", "terms", "projects" },
-        defaults = {
-          file_sorter = require("telescope.sorters").get_fuzzy_file,
-          mappings = {
-            i = {
-                  ["<C-j>"] = require("telescope.actions").move_selection_next,
-                  ["<C-k>"] = require("telescope.actions").move_selection_previous,
-            },
-          },
-        },
+    dependencies = {
+      "cljoly/telescope-repo.nvim",
+      {
+        'notjedi/nvim-rooter.lua',
+        config = function() require 'nvim-rooter'.setup() end
       }
-    end,
+    },
+    opts = overrides.telescope,
   },
   {
     "nvim-treesitter/nvim-treesitter",
@@ -62,24 +81,13 @@ local plugins = {
       --   ]]
     end,
   },
-  {
-    "CosmicNvim/cosmic-ui",
-    dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
-    config = function()
-      require("cosmic-ui").setup()
-    end,
-  },
-  {
-    "RRethy/vim-illuminate",
-    config = function()
-      require("illuminate").configure {
-        providers = { "lsp" },
-      }
-      vim.api.nvim_set_hl(0, "IlluminatedWordText", { link = "Visual" })
-      vim.api.nvim_set_hl(0, "IlluminatedWordRead", { link = "Visual" })
-      vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { link = "Visual" })
-    end,
-  },
+  -- {
+  --   "CosmicNvim/cosmic-ui",
+  --   dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
+  --   config = function()
+  --     require("cosmic-ui").setup()
+  --   end,
+  -- },
   {
     "clojure-vim/vim-jack-in",
     ft = { "clojure", "funnel" },
@@ -145,20 +153,6 @@ local plugins = {
       --require("plugins.configs.others").autopairs()
       require("nvim-autopairs").get_rule("'")[1].not_filetypes =
       { "scheme", "lisp", "clojure", "clojurescript", "fennel" }
-    end,
-  },
-  {
-    "simrat39/rust-tools.nvim",
-    dependencies = { "lukas-reineke/lsp-format.nvim" },
-    after = "nvim-lspconfig",
-    config = function()
-      require("rust-tools").setup({
-        server = {
-          on_attach = function(client)
-            require("lsp-format").on_attach(client)
-          end,
-        },
-      })
     end,
   },
   -- database
